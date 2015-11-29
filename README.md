@@ -1,8 +1,8 @@
 # QtSmartEntity
 ## About:
-Class designed to help you in projects which use JSON messages.
-You can speed up your work instead of writing a lot of setters and getters.
-Simply creation of class based on SmartEntity and invocation of methods like "toJsonObject" and "fillObject" will do job for you!
+SmartEntity will help you with handling JSON in your projects.
+You can speed up your work by simply creation of class based on SmartEntity instead of manually writing a lot of setters and getters which manipulates JSON and your objects.
+Invocation of methods like "toJson Object" and "fill Object" will do job for you!
 
 ## How to add:
 1. Open and run project to check test results.
@@ -11,7 +11,7 @@ Simply creation of class based on SmartEntity and invocation of methods like "to
 4. Done!
 
 ## Example:
-1. Class creation:
+* Class creation:
 ```
 class Doge : public SmartEntity
 {
@@ -25,12 +25,12 @@ public:
     .. Generated Q_PROPERTY members ..;
 };
 ```
-2. Register smart class:
+* Register smart class:
 ```
 registerSmartClass(Doge*);
 ```
 
-3. Smart class in action:
+* Smart class in action:
 ```
 registerSmartClass(Doge*);
 
@@ -46,7 +46,7 @@ sadEmptyDoge->fillObject(doge->toJsonObject());
 qDebug() << "[After] Sad empty doge :) -> " << sadEmptyDoge->toJsonObject();
 ```
 
-4. Output:
+* Output:
 ```
 Doge:
 {
@@ -68,12 +68,3 @@ Doge:
 	"muchStrings":["WoW!","Nice!","Veri smart!"]
 }
 ```
-
-
-
-
-
-
-
-
-
