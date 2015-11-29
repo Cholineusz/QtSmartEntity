@@ -54,7 +54,7 @@ Doge:
 {
 	"manyDoggies":[{"manyDoggies":[],"muchStrings":[]},
 				  {"manyDoggies":[],"muchStrings":[]}],
-	"muchStrings":["WoW!","Nice!","Veri Qt!"]
+	"muchStrings":["WoW!","Nice!","Veri smart!"]
 }
 
 [Before] Sad empty doge :( -> 
@@ -67,7 +67,7 @@ Doge:
 {
 	"manyDoggies":[{"manyDoggies":[],"muchStrings":[]},
 				   {"manyDoggies":[],"muchStrings":[]}],
-	"muchStrings":["WoW!","Nice!","Veri Qt!"]
+	"muchStrings":["WoW!","Nice!","Veri smart!"]
 }
 ```
 
