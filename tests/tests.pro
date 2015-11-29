@@ -14,7 +14,7 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
-include($$PWD/../src/src.pri)
+include($$PWD/../SmartEntity/smartentity.pri)
 
 SOURCES += \
     SmartEntityTest.cpp
