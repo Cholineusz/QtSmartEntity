@@ -1,7 +1,7 @@
 # QtSmartEntity
 ## About:
-'SmartEntity' class designed to help you in projects based on JSON messages.
-By using it you can speed up your project instead of writing a lot of setters and getters for JsonObjects and your objects.
+Class designed to help you in projects which use JSON messages.
+You can speed up your work instead of writing a lot of setters and getters.
 Simply creation of class based on SmartEntity and invocation of methods like "toJsonObject" and "fillObject" will do job for you!
 
 ## How to add:
