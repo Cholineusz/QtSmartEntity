@@ -7,7 +7,7 @@ Simply creation of class based on SmartEntity and invocation of methods like "to
 ## How to add:
 1. Open and run project to check test results.
 2. If test results are OK then copy folder 'SmartEntity' which includes smartentity.pri to your project directory.
-3. Add magical line: 'include(<path_to_smartentity.pri>)' in your pro file.
+3. Add magical line: 'include(\<path_to_smartentity.pri\>)' in your pro file.
 4. Done!
 
 ## Example:
