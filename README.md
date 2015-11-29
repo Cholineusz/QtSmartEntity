@@ -31,7 +31,6 @@ registerSmartClass(Doge*);
 ```
 
 3. Smart class in action:
-
 ```
 registerSmartClass(Doge*);
 
@@ -48,7 +47,6 @@ qDebug() << "[After] Sad empty doge :) -> " << sadEmptyDoge->toJsonObject();
 ```
 
 4. Output:
-
 ```
 Doge:
 {
