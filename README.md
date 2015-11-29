@@ -18,7 +18,7 @@ Smart classes scans all properties and creates QJsonObject from them in followin
 * User defined classes based on SmartEntity
 
 ## Limitations:
-* Only pointers to classes based on SmartEntity
+* Only pointers to objects are processed
 * QLists in QLists
 * Constructors of defined classes must have Q_INVOKABLE
 
