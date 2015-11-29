@@ -17,6 +17,11 @@ Smart classes scans all properties and creates QJsonObject from them in followin
 * JSON types (double, int, QString, bool)
 * User defined classes based on SmartEntity
 
+## Limitations:
+* Only pointers to classes based on SmartEntity
+* QLists in QLists
+* Constructors of defined classes must have Q_INVOKABLE
+
 ## How to add:
 1. Open and run project to check test results.
 2. If all tests passed then copy folder 'SmartEntity' which includes smartentity.pri to your project directory.
