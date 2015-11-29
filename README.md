@@ -2,7 +2,7 @@
 ## About:
 SmartEntity will help you with handling JSON in your projects.
 You can speed up your work by simply creation of class based on SmartEntity instead of manually writing a lot of setters and getters which manipulates JSON and your objects.
-Invocation of methods like "toJson Object" and "fill Object" will do job for you!
+Invocation of methods like "toJsonObject" and "fillObject" will do job for you!
 
 ## How to add:
 1. Open and run project to check test results.
