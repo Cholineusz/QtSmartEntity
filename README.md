@@ -1,17 +1,35 @@
 # QtSmartEntity
 ## About:
-Class designed to help you in projects which use JSON messages.
-You can speed up your work instead of writing a lot of setters and getters.
-Simply creation of class based on SmartEntity and invocation of methods like "toJsonObject" and "fillObject" will do job for you!
+SmartEntity will help you with handling JSON in your projects.
+You can speed up your work by simply creation of class based on SmartEntity instead of manually writing a lot of setters and getters which manipulates JSON and your objects.
+Invocation of methods like "toJsonObject" and "fillObject" will do job for you!
+
+## How it works:
+SmartEntity is based on QObject, in this way have access to all defined by user properties ([see Q_PROPERTY](http://doc.qt.io/qt-5/properties.html)).
+Smart classes scans all properties and creates QJsonObject from them in following format:
+```
+{"property_name":"property_value"}
+```
+
+## Supported types:
+* QLists
+* QStringLists
+* JSON types (double, int, QString, bool)
+* User defined classes based on SmartEntity
+
+## Limitations:
+* Only pointers to objects are processed
+* QLists in QLists
+* Constructors of defined classes must have Q_INVOKABLE
 
 ## How to add:
 1. Open and run project to check test results.
-2. If test results are OK then copy folder 'SmartEntity' which includes smartentity.pri to your project directory.
+2. If all tests passed then copy folder 'SmartEntity' which includes smartentity.pri to your project directory.
 3. Add magical line: 'include(\<path_to_smartentity.pri\>)' in your pro file.
 4. Done!
 
 ## Example:
-1. Class creation:
+* Class creation:
 ```
 class Doge : public SmartEntity
 {
@@ -25,12 +43,12 @@ public:
     .. Generated Q_PROPERTY members ..;
 };
 ```
-2. Register smart class:
+* Register smart class:
 ```
 registerSmartClass(Doge*);
 ```
 
-3. Smart class in action:
+* Smart class in action:
 ```
 registerSmartClass(Doge*);
 
@@ -46,7 +64,7 @@ sadEmptyDoge->fillObject(doge->toJsonObject());
 qDebug() << "[After] Sad empty doge :) -> " << sadEmptyDoge->toJsonObject();
 ```
 
-4. Output:
+* Output:
 ```
 Doge:
 {
@@ -68,12 +86,3 @@ Doge:
 	"muchStrings":["WoW!","Nice!","Veri smart!"]
 }
 ```
-
-
-
-
-
-
-
-
-
