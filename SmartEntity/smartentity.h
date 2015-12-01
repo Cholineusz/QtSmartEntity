@@ -20,17 +20,23 @@ class SmartEntity : public QObject
 
 public:
     Q_INVOKABLE SmartEntity(QObject *parent=nullptr);
+    //Returns class representation as QJsonObject;
     QJsonObject toJsonObject() const;
 
 public slots:
+    //Fills all members of class by values from QJsonObject;
     void fillObject(const QJsonObject &object);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
-
+//Type to handle function pointer for QList<T> creators;
 typedef QVariant (*listCreator)(const QString &className, const QJsonArray &array);
+//Type to handle function pointer for QJsonArray<T> creators;
 typedef QJsonArray (*jsonArrayCreator)(const QVariant &variant);
 
+//Returns type between brackets;
+//For example QList<int> -> 'int', QList< QList<int> > -> 'QList<int>';
+//Returns given argument if brackets are not found in string;
 static inline QString getTypeName(const char *listType) {
     QString listTypeStr(listType);
     QRegExp regExp("\\<(\\S+)\\>$");
@@ -41,6 +47,10 @@ static inline QString getTypeName(const char *listType) {
     }
 }
 
+//Creates funcion with given name of class;
+//Class must be registered in QMetaTypes;
+//Class must have Q_INVOKABLE constructor;
+//Class must be based on SmartEntity;
 static inline SmartEntity* createSmartClass(const QByteArray &className) {
     int id = QMetaType::type(className);
     if (!QMetaType::isRegistered(id)) {
@@ -50,6 +60,9 @@ static inline SmartEntity* createSmartClass(const QByteArray &className) {
     return qobject_cast<SmartEntity*>(metaObj->newInstance());
 }
 
+//QList creator;
+//Returns QList of type T filled by values from array;
+//Please note QList<T> is converted to QVariant;
 template<typename T>
 QVariant createList(const QString &classType, const QJsonArray &array) {
     Q_UNUSED(classType)
@@ -60,6 +73,10 @@ QVariant createList(const QString &classType, const QJsonArray &array) {
     return QVariant::fromValue(list);
 }
 
+//QList creator;
+//Returns QList of type T, T is class.
+//List is filled by values from array;
+//Please note QList<T> is converted to QVariant;
 template<typename T>
 QVariant createObjectList(const QString &classType, const QJsonArray &array) {
     QList<T> list;
@@ -74,11 +91,15 @@ QVariant createObjectList(const QString &classType, const QJsonArray &array) {
     return QVariant::fromValue(list);
 }
 
+//Creates QJsonVariant from QList<T> (QVariant);
+//In this case T is 'primitive' type like: bool, double, QString;
 template<typename T>
 QJsonArray createJsonArray(const QVariant &variant) {
     return QJsonArray::fromVariantList(variant.value<QVariantList>());
 }
 
+//Creates QJsonVariant from QList<T> (QVariant);
+//In this case T is class based on SmartEntity;
 template<typename T>
 QJsonArray createObjectJsonArray(const QVariant &variant) {
     const QList<T> list = qvariant_cast<QList<T> >(variant);
@@ -93,9 +114,13 @@ QJsonArray createObjectJsonArray(const QVariant &variant) {
     return array;
 }
 
+//Helper class to handle all creators/fillers;
+//SmartGlobalMap is singleton;
 class SmartGlobalMap
 {
 public:
+    //Creates instance of SmartGlobalMap if not exists;
+    //Also registers all standard types handled by QJson;
     static SmartGlobalMap *instance() {
         if (!m_instance) {
             m_instance = new SmartGlobalMap();
@@ -117,33 +142,45 @@ public:
         return m_instance;
     }
 
+    //Returns QList<T> creator;
+    //For example if type is equal to 'int'
+    //then returned creator will handle QList<int>;
     listCreator returnListCreator(const QString &type) {
         if (!m_listCreatorMap.contains(type))
             qCritical() << "Warning! Unsupported type: " << type;
         return m_listCreatorMap.value(type, nullptr);
     }
 
+    //Returns QJsonArray creator;
+    //For example if type is eual to 'int'
+    //then returned creator will handle conversion QList<int> to QJsonArray;
     jsonArrayCreator returnJsonArrayCreator(const QString &type) {
         if (!m_jsonArrayCreatorMap.contains(type))
             qCritical() << "Warning! Unsupported type: " << type;
         return m_jsonArrayCreatorMap.value(type, nullptr);
     }
 
+    //Inserts new listCreator with given type;
     template<typename T>
     void insertListCreator(const QString &type) {
         m_listCreatorMap.insert(type, createList<T>);
     }
 
+    //Inserts new listCreator with given type;
+    //In this case listCreator will handle object types;
     template<typename T>
     void insertObjectListCreator(const QString &type) {
         m_listCreatorMap.insert(type, createObjectList<T>);
     }
 
+    //Inserts new arrayCreator with given type;
     template<typename T>
     void insertJsonArrayCreator(const QString &type) {
         m_jsonArrayCreatorMap.insert(type, createJsonArray<T>);
     }
 
+    //Inserts new arrayCreator with given type;
+    //In this case arrayCreator will handle object types;
     template<typename T>
     void insertObjectJsonArrayCreator(const QString &type) {
         m_jsonArrayCreatorMap.insert(type, createObjectJsonArray<T>);
@@ -156,6 +193,7 @@ public:
     QMap<QString, jsonArrayCreator> m_jsonArrayCreatorMap;
 };
 
+//Registers new class types based on SmartEntity;
 #define registerSmartClass(t) { \
     qRegisterMetaType<t>(#t); \
     SmartGlobalMap::instance()->insertObjectListCreator<t>(#t); \
