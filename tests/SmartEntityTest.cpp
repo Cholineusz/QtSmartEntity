@@ -5,6 +5,9 @@
 //TestObjects
 #include "testobject.h"
 
+//TestSubClass
+#include "testsubclass.h"
+
 class SmartEntityTest : public QObject
 {
     Q_OBJECT
@@ -16,6 +19,7 @@ private Q_SLOTS:
     void testInt();
     void testString();
     void testObject();
+    void testSubClass();
 };
 
 SmartEntityTest::SmartEntityTest()
@@ -108,6 +112,21 @@ void SmartEntityTest::testObject()
 
     obj->deleteLater();
     fillObj->deleteLater();
+}
+
+void SmartEntityTest::testSubClass()
+{
+    TestSubClass *obj = new TestSubClass;
+    obj->setId(2);
+    obj->setIdSubClass(-2);
+
+    TestSubClass *emptyObj = new TestSubClass;
+    emptyObj->fillObject(obj->toJsonObject());
+
+    QCOMPARE(emptyObj->toJsonObject(), obj->toJsonObject());
+
+    obj->deleteLater();
+    emptyObj->deleteLater();
 }
 
 

@@ -23,4 +23,5 @@ DEFINES += SRCDIR=\\\"$$PWD/\\\"
 HEADERS += \
     testint.h \
     teststring.h \
-    testobject.h
+    testobject.h \
+    testsubclass.h

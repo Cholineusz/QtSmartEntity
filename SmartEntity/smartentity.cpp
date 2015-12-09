@@ -21,76 +21,90 @@ SmartEntity::SmartEntity(QObject *parent) :
 QJsonObject SmartEntity::toJsonObject() const
 {
     QJsonObject object;
-    for (int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount() ; ++i) {
+    //Obtain meta object of current object;
+    const QMetaObject *metaObj = metaObject();
+    //Iterate over all subclasses until we meet QObject;
+    while (QByteArray(metaObj->className()) != "QObject") {
+        for (int i = metaObj->propertyOffset(); i < metaObj->propertyCount() ; ++i) {
 
-        QMetaProperty property = metaObject()->property(i);
-        QString propertyName(property.name());
+            QMetaProperty property = metaObj->property(i);
+            QString propertyName(property.name());
 
-        QVariant var = property.read(this);
+            QVariant var = property.read(this);
 
-        QJsonValue val;
-        if (var.canConvert<QVariantList>()) {
-            QString listItemType = getTypeName(property.typeName());
-            jsonArrayCreator filler = SmartGlobalMap::instance()->returnJsonArrayCreator(listItemType);
-            if (filler != nullptr)
-                val = filler(var);
-            else
-                continue;
-        } else {
-            SmartEntity *entity = nullptr;
-            entity = qvariant_cast<SmartEntity*>(var);
-            if (entity != nullptr) {
-                val = QJsonValue(entity->toJsonObject());
+            QJsonValue val;
+            if (var.canConvert<QVariantList>()) {
+                QString listItemType = getTypeName(property.typeName());
+                jsonArrayCreator filler = SmartGlobalMap::instance()->returnJsonArrayCreator(listItemType);
+                if (filler != nullptr)
+                    val = filler(var);
+                else
+                    continue;
             } else {
-                val = QJsonValue::fromVariant(var);
+                SmartEntity *entity = nullptr;
+                entity = qvariant_cast<SmartEntity*>(var);
+                if (entity != nullptr) {
+                    val = QJsonValue(entity->toJsonObject());
+                } else {
+                    val = QJsonValue::fromVariant(var);
+                }
             }
-        }
 
-        object.insert(propertyName, val);
+            object.insert(propertyName, val);
+        }
+        //Take next subclass;
+        metaObj = metaObj->superClass();
     }
     return object;
 }
 
 void SmartEntity::fillObject(const QJsonObject &object)
 {
-    for (int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount() ; ++i) {
-        QMetaProperty property = metaObject()->property(i);
-        QString propertyName(property.name());
+    //Obtain meta object of current object;
+    const QMetaObject *metaObj = metaObject();
+    //Iterate over all subclasses until we meet QObject;
+    while (QByteArray(metaObj->className()) != "QObject") {
+        for (int i = metaObj->propertyOffset(); i < metaObj->propertyCount() ; ++i) {
+            QMetaProperty property = metaObj->property(i);
+            QString propertyName(property.name());
 
-        if ( !property.isWritable() )
-            return;
+            if ( !property.isWritable() )
+                return;
 
-        QJsonValue val = object.value(propertyName);
+            QJsonValue val = object.value(propertyName);
 
-        if (val.isUndefined()) {
-            continue;
-        }
-
-        QVariant var;
-        if (property.type() == QVariant::StringList) {
-            var = val.toArray().toVariantList();
-        } else if (val.type() == QJsonValue::Array) {
-            QString listItemType = getTypeName(property.typeName());
-
-            listCreator filler = SmartGlobalMap::instance()->returnListCreator(listItemType);
-            if (filler != nullptr) {
-                var = filler(listItemType, val.toArray());
-            } else
+            if (val.isUndefined()) {
                 continue;
-        } else if (val.type() == QJsonValue::Object){
-            QByteArray type(property.typeName());
-            SmartEntity *entity = createSmartClass(type);
-            if (entity != nullptr) {
-                entity->fillObject(val.toObject());
-                var = QVariant::fromValue(entity);
-            } else {
-                var = QVariant();
             }
 
-        } else {
-            var = QVariant::fromValue(val);
-        }
+            QVariant var;
+            if (property.type() == QVariant::StringList) {
+                var = val.toArray().toVariantList();
+            } else if (val.type() == QJsonValue::Array) {
+                QString listItemType = getTypeName(property.typeName());
 
-        property.write(this, var);
+                listCreator filler = SmartGlobalMap::instance()->returnListCreator(listItemType);
+                if (filler != nullptr) {
+                    var = filler(listItemType, val.toArray());
+                } else
+                    continue;
+            } else if (val.type() == QJsonValue::Object){
+                QByteArray type(property.typeName());
+                SmartEntity *entity = createSmartClass(type);
+                if (entity != nullptr) {
+                    entity->fillObject(val.toObject());
+                    var = QVariant::fromValue(entity);
+                } else {
+                    var = QVariant();
+                }
+
+            } else {
+                var = QVariant::fromValue(val);
+            }
+
+            property.write(this, var);
+        }
+        //Take next subclass;
+        metaObj = metaObj->superClass();
     }
 }
